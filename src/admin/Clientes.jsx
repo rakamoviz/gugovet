@@ -19,7 +19,6 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 
 const FormDialog = ({ opened, handleClose, ...props }) => {
-  console.log("propsssss is ", props)
   return (
       <Dialog open={opened} onClose={handleClose}>
         <DialogTitle>Subscribe</DialogTitle>
@@ -49,7 +48,7 @@ const MemoizedFormDialog = React.memo(FormDialog)
 export const MyDatagridContext = React.createContext({
   source: '',
   handleClose: () => {},
-  usuario: {current: {}},
+  recordRef: {current: {}},
 });
 
 const MyDatagridRow = ({ record, id, onToggleItem, children, selected, selectable }) => {
@@ -57,14 +56,12 @@ const MyDatagridRow = ({ record, id, onToggleItem, children, selected, selectabl
 
   return (
     <MyDatagridContext.Consumer>
-      {({source, handleClose, usuario}) => {
+      {({source, handleClose, recordRef}) => {
       
-        console.log("HAHAJAJAJAHA AH", source, handleClose)
         const selectUsuario = (e) => {
           e.preventDefault()
-          usuario.current = record
+          recordRef.current = record
           setValue(source, record.id)
-          console.log("fuck", record.id, handleClose)
           handleClose(e)
         }
       
@@ -136,17 +133,6 @@ const UsuarioField = () => {
 
 const usuarioChoiceRenderer = choice => `${choice.nombre} (${choice.codigo})`;
 
-const ClearCountry = () => {
-    const { setValue } = useFormContext();
-
-    const handleClick = (e) => {
-      e.preventDefault()
-        setValue('codigo', 'edan');
-    };
-
-    return <button onClick={handleClick}>Clear country</button>
-}
-
 export const ClienteCreate = props => {
   const [formDialogOpened, setFormDialogOpened] = React.useState(false);
   const usuarioRef = React.useRef({})
@@ -162,12 +148,11 @@ export const ClienteCreate = props => {
   return (
       <Create {...props} actions={<ClienteCreateActions />}>
           <SimpleForm>
-            <span>{usuarioRef.current.nombre}</span>
             <TextInput source="codigo" />
             <TextInput source="nombre" />
-            <ClearCountry />
+            <TextField label="Usuario" record={usuarioRef.current} source="nombre"/>
             <Button onClick={handleClickOpenFormDialog}>Dia.lo.gue</Button>
-            <MyDatagridContext.Provider value={{handleClose: handleCloseFormDialog, source: "id_usuario", usuario: usuarioRef}}>
+            <MyDatagridContext.Provider value={{handleClose: handleCloseFormDialog, source: "id_usuario", recordRef: usuarioRef}}>
               <MemoizedFormDialog opened={formDialogOpened} />
             </MyDatagridContext.Provider>
           </SimpleForm>
